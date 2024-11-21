@@ -1,0 +1,38 @@
+name: Deploy PHP Code
+
+on:
+  push:
+    branches:
+      - main # Deploy only on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key and known hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_REMOTE_SERVER_IP: ${{ secrets.SSH_REMOTE_SERVER_IP }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $SSH_REMOTE_SERVER_IP >> ~/.ssh/known_hosts
+
+      - name: Deploy code via rsync
+        env:
+          SSH_REMOTE_SERVER_USERNAME: ${{ secrets.SSH_REMOTE_SERVER_USERNAME }}
+          SSH_REMOTE_SERVER_IP: ${{ secrets.SSH_REMOTE_SERVER_IP }}
+        run: |
+          rsync -avz --delete ./ ${SSH_REMOTE_SERVER_USERNAME}@${SSH_REMOTE_SERVER_IP}:/var/www/html/
+
+      - name: Restart Apache
+        env:
+          SSH_REMOTE_SERVER_USERNAME: ${{ secrets.SSH_REMOTE_SERVER_USERNAME }}
+          SSH_REMOTE_SERVER_IP: ${{ secrets.SSH_REMOTE_SERVER_IP }}
+        run: |
+          ssh ${SSH_REMOTE_SERVER_USERNAME}@${SSH_REMOTE_SERVER_IP} "sudo systemctl restart apache2"
