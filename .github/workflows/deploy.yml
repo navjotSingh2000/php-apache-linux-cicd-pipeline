@@ -24,4 +24,4 @@ jobs:
           SSH_REMOTE_SERVER_USERNAME: ${{ secrets.SSH_REMOTE_SERVER_USERNAME }}
           SSH_REMOTE_SERVER_IP: ${{ secrets.SSH_REMOTE_SERVER_IP }}
         run: |
-          rsync -avz --delete ./ ${{secrets.SSH_REMOTE_SERVER_USERNAME}}@${{secrets.SSH_REMOTE_SERVER_IP}}:/var/www/html/
+          rsync -avz ./ ${{secrets.SSH_REMOTE_SERVER_USERNAME}}@${{secrets.SSH_REMOTE_SERVER_IP}}:/var/www/html/
