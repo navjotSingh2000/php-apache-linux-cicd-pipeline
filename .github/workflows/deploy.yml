@@ -22,6 +22,12 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H $SSH_REMOTE_SERVER_IP >> ~/.ssh/known_hosts
+      - name: Debug SSH connection
+        env:
+          SSH_REMOTE_SERVER_USERNAME: ${{ secrets.SSH_REMOTE_SERVER_USERNAME }}
+          SSH_REMOTE_SERVER_IP: ${{ secrets.SSH_REMOTE_SERVER_IP }}
+        run: |
+          ssh -v ${SSH_REMOTE_SERVER_USERNAME}@${SSH_REMOTE_SERVER_IP} "echo 'SSH connection successful'"
 
       - name: Deploy code via rsync
         env:
