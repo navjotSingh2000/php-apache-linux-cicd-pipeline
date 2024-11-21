@@ -28,5 +28,8 @@ jobs:
           SSH_REMOTE_SERVER_IP: ${{ secrets.SSH_REMOTE_SERVER_IP }}
         run: |
           echo "Starting rsync..."
-          rsync -avz --progress ./ ${{secrets.SSH_REMOTE_SERVER_USERNAME}}@${{secrets.SSH_REMOTE_SERVER_IP}}:/var/www/html/
+          rsync -avz --progress \
+            --exclude '.git' \
+            --exclude '.github' \
+            ./ ${{secrets.SSH_REMOTE_SERVER_USERNAME}}@${{secrets.SSH_REMOTE_SERVER_IP}}:/var/www/html/
           echo "rsync completed."
